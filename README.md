@@ -1,4 +1,5 @@
 PROGRAMACIÓN PARA LA CIENCIA DE DATOS
+
 Trabajos Semanales
 
 Repositorio dedicado a organizar y almacenar las actividades y retos de programación realizados durante el semestre.
