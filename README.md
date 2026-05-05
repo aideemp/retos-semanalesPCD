@@ -1,4 +1,6 @@
-Trabajos Semanales - Ciencia de Datos
+PROGRAMACIÓN PARA LA CIENCIA DE DATOS
+Trabajos Semanales
+
 Repositorio dedicado a organizar y almacenar las actividades y retos de programación realizados durante el semestre.
 
 𖹭 Contenido del Repositorio
@@ -15,4 +17,4 @@ SO: Linux
 
 Control de versiones: Git
 
-Molina Palmas Sandra Aide
+Por: Molina Palmas Sandra Aide
