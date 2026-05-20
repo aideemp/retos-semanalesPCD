@@ -1,57 +1,69 @@
-#codigo  de solucion
 #!/usr/bin/env python3
 """
-Sistema de Inventario Modular
-Genera reporte de productos que necesitan reorden.
+Sistema de Inventario Modular.
+
+Lee data/inventario.csv, identifica productos con stock < stock_minimo
+y escribe el reporte en outputs/reporte_inventario.csv ordenado de
+mayor a menor por unidades_faltantes.
 """
 
-import os
 from models.producto import Producto
 from utils.validators import validar_producto
 from utils.io import leer_inventario, escribir_reporte
 
+# Configuracion (rutas relativas: correr con `cd Reto_4 && python3 main.py`)
 ARCHIVO_INVENTARIO = "data/inventario.csv"
 ARCHIVO_REPORTE = "outputs/reporte_inventario.csv"
 
 
 def crear_productos(datos_raw):
-    """Convierte lista de dicts en objetos Producto. Ignora inválidos."""
+    """
+    Convierte la lista de diccionarios crudos en objetos Producto.
+    Ignora silenciosamente los registros invalidos.
+
+    Args:
+        datos_raw: Lista de dicts con los campos del CSV.
+
+    Returns:
+        list: Lista de objetos Producto validos.
+    """
     productos = []
 
     for datos in datos_raw:
         es_valido, error = validar_producto(
-            datos.get('sku'),
-            datos.get('nombre'),
-            datos.get('categoria'),
-            datos.get('precio'),
-            datos.get('stock'),
-            datos.get('stock_minimo')
+            datos.get("sku"),
+            datos.get("nombre"),
+            datos.get("categoria"),
+            datos.get("precio"),
+            datos.get("stock"),
+            datos.get("stock_minimo"),
         )
 
         if not es_valido:
-            print(f"  [Advertencia] Ignorando registro inválido: {error}")
+            print(f"Advertencia: Ignorando registro invalido - {error}")
             continue
 
-        producto = Producto(
-            sku=datos['sku'],
-            nombre=datos['nombre'],
-            categoria=datos['categoria'],
-            precio=float(datos['precio']),
-            stock=int(datos['stock']),
-            stock_minimo=int(datos['stock_minimo'])
+        productos.append(
+            Producto(
+                sku=datos["sku"],
+                nombre=datos["nombre"],
+                categoria=datos["categoria"],
+                precio=float(datos["precio"]),
+                stock=int(datos["stock"]),
+                stock_minimo=int(datos["stock_minimo"]),
+            )
         )
-        productos.append(producto)
 
     return productos
 
 
 def filtrar_necesitan_reorden(productos):
-    """Filtra los productos que necesitan reorden."""
+    """Filtra los productos cuyo stock esta por debajo del minimo."""
     return [p for p in productos if p.necesita_reorden()]
 
 
 def ordenar_por_faltantes(productos):
-    """Ordena por unidades faltantes de mayor a menor."""
+    """Ordena por unidades_faltantes de forma descendente."""
     return sorted(productos, key=lambda p: p.unidades_faltantes(), reverse=True)
 
 
@@ -60,23 +72,20 @@ def main():
     print("SISTEMA DE INVENTARIO - Reporte de Reorden")
     print("=" * 50)
 
-    # Crear carpeta de salida si no existe
-    os.makedirs("outputs", exist_ok=True)
-
-    # 1. Leer datos
+    # 1. Leer datos del CSV
     print(f"\nLeyendo inventario de: {ARCHIVO_INVENTARIO}")
     datos_raw = leer_inventario(ARCHIVO_INVENTARIO)
-    print(f"Líneas leídas: {len(datos_raw)}")
+    print(f"Registros leidos: {len(datos_raw)}")
 
-    # 2. Crear objetos Producto
+    # 2. Convertir a objetos Producto (descartando invalidos)
     productos = crear_productos(datos_raw)
-    print(f"Productos válidos: {len(productos)}")
+    print(f"Productos validos: {len(productos)}")
 
     # 3. Filtrar los que necesitan reorden
     necesitan_reorden = filtrar_necesitan_reorden(productos)
     print(f"Productos que necesitan reorden: {len(necesitan_reorden)}")
 
-    # 4. Ordenar por unidades faltantes
+    # 4. Ordenar por unidades faltantes descendente
     necesitan_reorden = ordenar_por_faltantes(necesitan_reorden)
 
     # 5. Mostrar resumen en consola
@@ -86,7 +95,7 @@ def main():
     for p in necesitan_reorden:
         print(p)
 
-    # 6. Escribir reporte
+    # 6. Escribir reporte CSV
     escribir_reporte(necesitan_reorden, ARCHIVO_REPORTE)
     print(f"\nReporte guardado en: {ARCHIVO_REPORTE}")
 
