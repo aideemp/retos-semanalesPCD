@@ -1,59 +1,113 @@
-import sys
+Reto Semana 3: Analizador de Ventas
+Programacion para Ciencia de Datos - IPN 2026
+"""
 
-def main():
+import sys
+import math
+
+
+def parsear_linea(linea):
+    """Devuelve (producto, cantidad, precio) si la linea es valida, o None."""
+    partes = linea.split(",")
+
+    # Debe tener exactamente 4 columnas
+    if len(partes) != 4:
+        return None
+
+    fecha, producto, cant_str, prec_str = (p.strip() for p in partes)
+
+    # Producto no puede estar vacio
+    if not producto:
+        return None
+
+    # Cantidad: entero positivo
+    try:
+        cantidad = int(cant_str)
+    except ValueError:
+        return None
+    if cantidad <= 0:
+        return None
+
+    # Precio: flotante finito y positivo (rechaza inf, -inf, NaN)
+    try:
+        precio = float(prec_str)
+    except ValueError:
+        return None
+    if not math.isfinite(precio) or precio <= 0:
+        return None
+
+    return producto, cantidad, precio
+
+
+def leer_transacciones(lineas):
+    """Agrupa transacciones por producto (unidades e ingreso acumulados)."""
     productos = {}
-    
-    lineas = sys.stdin.readlines()
-    if not lineas:
-        return
-    
-    iterador = iter(lineas)
-    next(iterador)  # Saltar encabezado
-    
-    for linea in iterador:
+    primera = True
+
+    for linea in lineas:
         linea = linea.strip()
+
+        # Saltar encabezado
+        if primera:
+            primera = False
+            continue
+
+        # Saltar lineas vacias
         if not linea:
             continue
-        
-        partes = linea.split(',')
-        if len(partes) != 4:
+
+        resultado = parsear_linea(linea)
+        if resultado is None:
             continue
-        
-        try:
-            nombre = partes[1].strip()
-            cantidad = int(partes[2])
-            precio_unitario = float(partes[3])
-            
-            if nombre not in productos:
-                productos[nombre] = {"unidades": 0, "ingreso": 0.0}
-            
-            productos[nombre]["unidades"] += cantidad
-            productos[nombre]["ingreso"] += cantidad * precio_unitario
-            
-        except ValueError:
-            continue
-    
-    # Calcular precio promedio y armar reporte
-    reporte = []
-    for nombre, datos in productos.items():
-        unidades = datos["unidades"]
-        ingreso = datos["ingreso"]
-        promedio = ingreso / unidades if unidades > 0 else 0
-        
-        reporte.append({
-            "producto": nombre,
-            "unidades": unidades,
-            "ingreso": ingreso,
-            "promedio": promedio
-        })
-    
-    # Ordenar por ingreso descendente
-    reporte_ordenado = sorted(reporte, key=lambda x: x["ingreso"], reverse=True)
-    
-    # Imprimir salida
-    print("producto,unidades_vendidas,ingreso_total,precio_promedio")
-    for p in reporte_ordenado:
-        print(f"{p['producto']},{p['unidades']},{p['ingreso']:.2f},{p['promedio']:.2f}")
+
+        producto, cantidad, precio = resultado
+
+        if producto not in productos:
+            productos[producto] = {"unidades": 0, "ingreso": 0.0}
+
+        productos[producto]["unidades"] += cantidad
+        productos[producto]["ingreso"] += cantidad * precio
+
+    return productos
+
+
+def calcular_promedios(productos):
+    """Agrega la clave 'promedio' a cada producto."""
+    for prod in productos:
+        unidades = productos[prod]["unidades"]
+        ingreso = productos[prod]["ingreso"]
+        productos[prod]["promedio"] = ingreso / unidades if unidades > 0 else 0.0
+    return productos
+
+
+def ordenar_por_ingreso(productos):
+    """Lista de tuplas (nombre, datos) ordenada por ingreso desc."""
+    return sorted(
+        productos.items(),
+        key=lambda x: x[1]["ingreso"],
+        reverse=True,
+    )
+
+
+def generar_csv(productos_ordenados):
+    """Genera el CSV de salida como string."""
+    lineas = ["producto,unidades_vendidas,ingreso_total,precio_promedio"]
+    for nombre, datos in productos_ordenados:
+        lineas.append(
+            f"{nombre},{datos['unidades']},{datos['ingreso']:.2f},{datos['promedio']:.2f}"
+        )
+    return "\n".join(lineas)
+
+
+def main():
+    lineas = sys.stdin.readlines()
+
+    productos = leer_transacciones(lineas)
+    productos = calcular_promedios(productos)
+    productos_ordenados = ordenar_por_ingreso(productos)
+
+    print(generar_csv(productos_ordenados))
+
 
 if __name__ == "__main__":
     main()
