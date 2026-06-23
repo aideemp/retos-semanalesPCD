@@ -1,0 +1,71 @@
+{
+  "estudiante": {
+    "boleta": "2021630001",
+    "nombre": "Juan Pérez García",
+    "semestre": 4,
+    "carrera": "CD",
+    "email": "juan.perez@ipn.mx"
+  },
+  "materias": [
+    {
+      "materia_id": "MAT101",
+      "nombre": "Cálculo Diferencial",
+      "parcial_1": 5.8,
+      "parcial_2": 7.2,
+      "final": 7.0,
+      "promedio": 6.67
+    },
+    {
+      "materia_id": "MAT102",
+      "nombre": "Cálculo Integral",
+      "parcial_1": 6.1,
+      "parcial_2": 4.5,
+      "final": 4.8,
+      "promedio": 5.13
+    },
+    {
+      "materia_id": "PROG101",
+      "nombre": "Programación I",
+      "parcial_1": 3.9,
+      "parcial_2": 7.5,
+      "final": 6.9,
+      "promedio": 6.1
+    },
+    {
+      "materia_id": "PROG102",
+      "nombre": "Programación II",
+      "parcial_1": 4.9,
+      "parcial_2": 5.8,
+      "final": 5.4,
+      "promedio": 5.37
+    },
+    {
+      "materia_id": "EST101",
+      "nombre": "Probabilidad",
+      "parcial_1": 8.6,
+      "parcial_2": 6.4,
+      "final": 6.1,
+      "promedio": 7.03
+    },
+    {
+      "materia_id": "EST102",
+      "nombre": "Estadística Inferencial",
+      "parcial_1": 4.8,
+      "parcial_2": 4.7,
+      "final": 5.8,
+      "promedio": 5.1
+    },
+    {
+      "materia_id": "BD101",
+      "nombre": "Bases de Datos",
+      "parcial_1": 7.4,
+      "parcial_2": 8.3,
+      "final": 8.2,
+      "promedio": 7.97
+    }
+  ],
+  "promedio_general": 6.2,
+  "creditos_cursados": 46,
+  "materias_aprobadas": 4,
+  "materias_reprobadas": 3
+}
